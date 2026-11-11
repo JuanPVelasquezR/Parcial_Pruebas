@@ -51,7 +51,8 @@ router.get("/", async (req, res) => {
 
   const facturadoPeriodo = Number(facturado.rows[0].s);
   const recaudadoPeriodo = Number(recaudo.rows[0].s);
-  const porcentajeRecuperacion = (recaudadoPeriodo / facturadoPeriodo) * 100;
+  const porcentajeRecuperacion =
+  facturadoPeriodo > 0 ? (recaudadoPeriodo / facturadoPeriodo) * 100 : null;
 
   res.json({
     periodo,
@@ -61,7 +62,8 @@ router.get("/", async (req, res) => {
     cartera_total: Number(cartera.rows[0].s),
     facturacion_periodo: facturadoPeriodo,
     recaudo_periodo: recaudadoPeriodo,
-    porcentaje_recuperacion: Math.round(porcentajeRecuperacion * 100) / 100,
+    porcentaje_recuperacion:
+  porcentajeRecuperacion == null ? null : Math.round(porcentajeRecuperacion * 100) / 100,
     ingresos_por_concepto: ingresosConcepto.rows,
   });
 });
