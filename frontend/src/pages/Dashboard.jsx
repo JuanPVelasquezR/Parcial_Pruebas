@@ -47,7 +47,11 @@ export default function Dashboard() {
         <div className="kpi"><div className="label">Recaudo periodo</div><div className="value">{money(data.recaudo_periodo)}</div></div>
         <div className="kpi">
           <div className="label">% recuperación cartera</div>
-          <div className="value">{data.porcentaje_recuperacion == null ? "—" : data.porcentaje_recuperacion + "%"}</div>
+          <div className="value">
+  {data.facturacion_periodo === 0 || data.porcentaje_recuperacion == null
+    ? "Sin facturación en el periodo"
+    : data.porcentaje_recuperacion + "%"}
+</div>
         </div>
         <div className="kpi">
           <div className="label">Total ingresos del periodo</div>
