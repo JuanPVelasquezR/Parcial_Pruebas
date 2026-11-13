@@ -19,10 +19,11 @@ router.get("/", async (req, res) => {
             p.nombres AS propietario, r.nombres AS residente
        FROM inmueble i
        LEFT JOIN persona p ON p.id = i.propietario_id
-       LEFT JOIN persona r ON r.id = i.residente_id
+              LEFT JOIN persona r ON r.id = i.residente_id
+      WHERE i.condominio_id = $3
       ORDER BY i.id
       LIMIT $1 OFFSET $2`,
-    [limit, offset]
+    [limit, offset, condominioId]
   );
 
   const total = await query("SELECT COUNT(*)::int AS n FROM inmueble WHERE condominio_id = $1", [condominioId]);
@@ -47,12 +48,13 @@ router.get("/:id", async (req, res) => {
 // Estado de cuenta de un inmueble (facturas con saldo + interés de mora).
 router.get("/:id/estado-cuenta", async (req, res) => {
   const inmuebleId = Number(req.params.id);
+  const condominioId = condominioDeLaPeticion(req);
 
   const inm = await query(
     `SELECT i.*, c.tasa_mora_mensual, c.dias_gracia
        FROM inmueble i JOIN condominio c ON c.id = i.condominio_id
-      WHERE i.id = $1`,
-    [inmuebleId]
+      WHERE i.id = $1 AND i.condominio_id = $2`,
+    [inmuebleId, condominioId]
   );
   if (!inm.rows[0]) return res.status(404).json({ error: "Inmueble no encontrado" });
   const tasa = inm.rows[0].tasa_mora_mensual;
