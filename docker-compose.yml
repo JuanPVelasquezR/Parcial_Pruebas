@@ -21,12 +21,16 @@ services:
   api:
     build: ./backend
     container_name: ph_api
+    command: npm run dev
     environment:
       DATABASE_URL: postgres://ph_user:ph_pass@db:5432/ph_gestion
       PORT: 4000
       JWT_SECRET: examen-pruebas-2026
     ports:
       - "4000:4000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
     depends_on:
       db:
         condition: service_healthy
@@ -38,6 +42,9 @@ services:
       VITE_API_URL: http://localhost:4000
     ports:
       - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     depends_on:
       - api
 

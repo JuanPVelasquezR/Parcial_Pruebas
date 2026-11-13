@@ -30,15 +30,35 @@ docker compose up --build
 ```
 
 Esto levanta la base de datos (con el esquema y los datos de prueba ya cargados),
-la API y el frontend. Luego abre:
+la API y el frontend. Los directorios `backend` y `frontend` quedan montados en los
+contenedores: los cambios en el frontend se reflejan automáticamente y la API se
+reinicia al guardar cambios en sus archivos. No es necesario borrar imágenes ni
+reconstruir los contenedores para cambios de código. Luego abre:
 
 - Aplicación web: http://localhost:5173
 - API (health check): http://localhost:4000/health
 
-Para reiniciar la base de datos desde cero:
+Si los contenedores ya estaban levantados antes de configurar los montajes, aplica
+la configuración una vez con:
 
 ```bash
-docker compose down -v && docker compose up --build
+docker compose up --build
+```
+
+Si cambias dependencias (`package.json`), reconstruye las imágenes y renueva los
+volúmenes de `node_modules`:
+
+```bash
+docker compose up --build --renew-anon-volumes
+```
+
+Los cambios en `db/schema.sql` o `db/seed.sql` no se aplican automáticamente a una
+base de datos existente: esos archivos se ejecutan solo al inicializar PostgreSQL
+por primera vez. Para reiniciar la base de datos desde cero (esto borra sus datos):
+
+```bash
+docker compose down -v
+docker compose up --build
 ```
 
 ## Puesta en marcha manual (sin Docker)
